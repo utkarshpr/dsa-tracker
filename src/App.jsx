@@ -1543,6 +1543,149 @@ MathAndBitManipulation : [
   { name: "Largest Rectangle in Histogram", company: "Facebook", link: "https://leetcode.com/problems/largest-rectangle-in-histogram/", intuition: "Stack", difficulty: "Hard" },
   { name: "Largest Rectangle in Matrix", company: "Amazon", link: "https://leetcode.com/problems/maximal-rectangle/", intuition: "Histogram stack", difficulty: "Hard" }
 ],
+LongestSubstringVariations: [
+  {
+    "name": "Longest Substring Without Repeating Characters",
+    "company": "Amazon",
+    "link": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+    "intuition": "Sliding window, hashset",
+    "difficulty": "Medium"
+  },
+  {
+    "name": "Longest Substring with At Most K Distinct Characters",
+    "company": "Google",
+    "link": "https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/",
+    "intuition": "Sliding window, hashmap",
+    "difficulty": "Medium"
+  },
+  {
+    "name": "Longest Repeating Character Replacement",
+    "company": "Facebook",
+    "link": "https://leetcode.com/problems/longest-repeating-character-replacement/",
+    "intuition": "Sliding window, freq count",
+    "difficulty": "Medium"
+  },
+  {
+    "name": "Longest Substring with At Most Two Distinct Characters",
+    "company": "Amazon",
+    "link": "https://leetcode.com/problems/longest-substring-with-at-most-two-distinct-characters/",
+    "intuition": "Sliding window, 2 distinct",
+    "difficulty": "Medium"
+  },
+  {
+    "name": "Longest Substring with At Least K Repeating Characters",
+    "company": "Google",
+    "link": "https://leetcode.com/problems/longest-substring-with-at-least-k-repeating-characters/",
+    "intuition": "Divide and conquer",
+    "difficulty": "Hard"
+  },
+  {
+    "name": "Longest Substring After Character Replacement",
+    "company": "Facebook",
+    "link": "https://leetcode.com/problems/longest-repeating-character-replacement/",
+    "intuition": "Similar to replace to make valid",
+    "difficulty": "Medium"
+  },
+  {
+    "name": "Longest Continuous Subarray with Absolute Diff Less Than or Equal to Limit",
+    "company": "Amazon",
+    "link": "https://leetcode.com/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/",
+    "intuition": "Sliding window + deque",
+    "difficulty": "Hard"
+  },
+  {
+    "name": "Longest Well-Performing Interval",
+    "company": "Google",
+    "link": "https://leetcode.com/problems/longest-well-performing-interval/",
+    "intuition": "Prefix sum + hashmap",
+    "difficulty": "Hard"
+  },
+  {
+    "name": "Longest Turbulent Subarray",
+    "company": "Facebook",
+    "link": "https://leetcode.com/problems/longest-turbulent-subarray/",
+    "intuition": "Sliding window on sign changes",
+    "difficulty": "Medium"
+  },
+  {
+    "name": "Longest Mountain in Array",
+    "company": "Amazon",
+    "link": "https://leetcode.com/problems/longest-mountain-in-array/",
+    "intuition": "Two pointers peak check",
+    "difficulty": "Medium"
+  },
+  {
+    "name": "Longest Palindromic Substring",
+    "company": "Google",
+    "link": "https://leetcode.com/problems/longest-palindromic-substring/",
+    "intuition": "Expand around center",
+    "difficulty": "Medium"
+  },
+  {
+    "name": "Longest Palindrome",
+    "company": "Facebook",
+    "link": "https://leetcode.com/problems/longest-palindrome/",
+    "intuition": "Count freq for palindrome",
+    "difficulty": "Easy"
+  },
+  {
+    "name": "Longest Consecutive Sequence",
+    "company": "Amazon",
+    "link": "https://leetcode.com/problems/longest-consecutive-sequence/",
+    "intuition": "HashSet linear scan",
+    "difficulty": "Medium"
+  },
+  {
+    "name": "Longest Subarray of 1's After Deleting One Element",
+    "company": "Google",
+    "link": "https://leetcode.com/problems/longest-subarray-of-1s-after-deleting-one-element/",
+    "intuition": "Sliding window of zeros",
+    "difficulty": "Medium"
+  },
+  {
+    "name": "Longest Nice Substring",
+    "company": "Facebook",
+    "link": "https://leetcode.com/problems/longest-nice-substring/",
+    "intuition": "Divide and conquer",
+    "difficulty": "Medium"
+  },
+  {
+    "name": "Longest Increasing Subsequence",
+    "company": "Amazon",
+    "link": "https://leetcode.com/problems/longest-increasing-subsequence/",
+    "intuition": "DP with binary search",
+    "difficulty": "Medium"
+  },
+  {
+    "name": "Longest Duplicate Substring",
+    "company": "Google",
+    "link": "https://leetcode.com/problems/longest-duplicate-substring/",
+    "intuition": "Binary search + Rolling hash",
+    "difficulty": "Hard"
+  },
+  {
+    "name": "Longest Happy Prefix",
+    "company": "Facebook",
+    "link": "https://leetcode.com/problems/longest-happy-prefix/",
+    "intuition": "KMP preprocessing",
+    "difficulty": "Hard"
+  },
+  {
+    "name": "Longest Substring Without Repeating Characters (Follow-up: Streaming)",
+    "company": "Amazon",
+    "link": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+    "intuition": "Sliding window adapt",
+    "difficulty": "Medium"
+  },
+  {
+    "name": "Longest Repeating Substring",
+    "company": "Google",
+    "link": "https://leetcode.com/problems/longest-repeating-substring/",
+    "intuition": "Binary search + HashSet",
+    "difficulty": "Medium"
+  }
+],
+
   
 };
 

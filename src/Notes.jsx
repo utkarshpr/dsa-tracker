@@ -118,7 +118,7 @@ function Notes({ darkMode }) {
 
   return (
     <div
-      className="container py-5"
+      className="container py-4"
       style={{
         minHeight: "100vh",
         backgroundColor: darkMode ? "#121212" : "#f9f4e7",
@@ -131,6 +131,7 @@ function Notes({ darkMode }) {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        style={{ fontSize: "clamp(1.2rem, 4vw, 1.8rem)" }}
       >
         📝 Your Notes
       </motion.h2>
@@ -139,31 +140,33 @@ function Notes({ darkMode }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
+        style={{ fontSize: "clamp(0.9rem, 3vw, 1.1rem)" }}
       >
         Create, search, and view notes in a clean modal view.
       </motion.p>
 
       {/* Search */}
-      <div className="mb-4 d-flex justify-content-center align-items-center gap-2">
+      <div className="mb-3 d-flex justify-content-center align-items-center gap-2 flex-wrap">
         <input
           type="text"
-          className="form-control shadow-sm rounded-pill px-4 py-2"
+          className="form-control shadow-sm rounded-pill px-3 py-2"
           placeholder="Search notes..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && applySearch()}
           style={{
             maxWidth: "400px",
+            flex: "1",
             backgroundColor: darkMode ? "#1f1f1f" : "#ffffff",
             color: darkMode ? "#f9f4e7" : "#1e1b18",
             border: "none"
           }}
         />
         <motion.button
-          whileHover={{ scale: 1.1 }}
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="btn btn-primary rounded-circle d-flex align-items-center justify-content-center"
-          style={{ width: "40px", height: "40px" }}
+          style={{ width: "42px", height: "42px" }}
           onClick={applySearch}
         >
           <FaSearch />
@@ -171,29 +174,31 @@ function Notes({ darkMode }) {
       </div>
 
       {/* Note Creation */}
-      <div className="mb-4 d-flex flex-column align-items-center gap-3">
+      <div className="mb-4 d-flex flex-column align-items-center gap-3 px-2">
         <input
           type="text"
           ref={inputRef}
-          className="form-control shadow-sm rounded-pill px-4 py-2"
+          className="form-control shadow-sm rounded-pill px-3 py-2"
           placeholder="Note Title..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           style={{
             maxWidth: "400px",
+            width: "100%",
             backgroundColor: darkMode ? "#1f1f1f" : "#ffffff",
             color: darkMode ? "#f9f4e7" : "#1e1b18",
             border: "none"
           }}
         />
         <textarea
-          className="form-control shadow-sm rounded px-4 py-2"
+          className="form-control shadow-sm rounded px-3 py-2"
           placeholder="Note Content..."
           rows={4}
           value={content}
           onChange={(e) => setContent(e.target.value)}
           style={{
             maxWidth: "400px",
+            width: "100%",
             backgroundColor: darkMode ? "#1f1f1f" : "#ffffff",
             color: darkMode ? "#f9f4e7" : "#1e1b18",
             border: "none",
@@ -224,7 +229,7 @@ function Notes({ darkMode }) {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="btn btn-primary rounded-pill px-4 py-2 shadow-sm"
+            className="btn btn-primary rounded-pill px-3 py-2"
             onClick={addNote}
           >
             Add Note
@@ -239,7 +244,7 @@ function Notes({ darkMode }) {
         <input type="file" accept=".json" ref={fileInputRef} style={{ display: "none" }} onChange={handleImport} />
       </div>
 
-      {/* Notes */}
+      {/* Notes Display */}
       {filteredNotes.length === 0 ? (
         <p className="text-center">No notes found. Add or search notes.</p>
       ) : (
@@ -256,13 +261,15 @@ function Notes({ darkMode }) {
                   background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.9)",
                   border: `2px solid ${tagColor}`,
                   cursor: "pointer",
-                  maxWidth: "300px",
-                  minWidth: "250px",
+                  maxWidth: "280px",
+                  width: "90%",
                   wordWrap: "break-word",
                 }}
               >
-                <h5 className="fw-bold mb-1">{note.title}</h5>
-                <p className="mb-1" style={{ whiteSpace: "pre-wrap" }}>{note.content.slice(0, 100)}...</p>
+                <h5 className="fw-bold mb-1" style={{ fontSize: "clamp(1rem, 3.5vw, 1.2rem)" }}>{note.title}</h5>
+                <p className="mb-1" style={{ whiteSpace: "pre-wrap", fontSize: "clamp(0.9rem, 3vw, 1rem)" }}>
+                  {note.content.slice(0, 100)}...
+                </p>
                 <div className="small" style={{ color: tagColor }}>🏷️ {note.tag}</div>
                 <div className="small">📅 {format(new Date(note.date), "dd MMM yyyy")}</div>
               </motion.div>
@@ -271,7 +278,7 @@ function Notes({ darkMode }) {
         </div>
       )}
 
-      {/* Modal for view/edit */}
+      {/* Modal */}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
@@ -279,7 +286,9 @@ function Notes({ darkMode }) {
           content: {
             background: darkMode ? "#1e1e1e" : "#ffffff",
             color: darkMode ? "#f9f4e7" : "#1e1b18",
-            maxWidth: "600px",
+            maxWidth: "90%",
+            maxHeight: "90vh",
+            overflowY: "auto",
             margin: "auto",
             borderRadius: "12px",
             padding: "20px",
@@ -309,13 +318,13 @@ function Notes({ darkMode }) {
               </>
             ) : (
               <>
-                <h4>{modalNote.title}</h4>
-                <p style={{ whiteSpace: "pre-wrap" }}>{modalNote.content}</p>
-                <div className="small" style={{ color: TAG_COLORS.find(t => t.name === modalNote.tag)?.color || "#6c757d" }}>
+                <h4 style={{ fontSize: "clamp(1.2rem, 4vw, 1.5rem)" }}>{modalNote.title}</h4>
+                <p style={{ whiteSpace: "pre-wrap", fontSize: "clamp(1rem, 3.5vw, 1.2rem)" }}>{modalNote.content}</p>
+                <div className="small mb-2" style={{ color: TAG_COLORS.find(t => t.name === modalNote.tag)?.color || "#6c757d" }}>
                   🏷️ {modalNote.tag}
                 </div>
-                <div className="small">📅 {format(new Date(modalNote.date), "dd MMM yyyy")}</div>
-                <div className="d-flex justify-content-end gap-2 mt-3">
+                <div className="small mb-2">📅 {format(new Date(modalNote.date), "dd MMM yyyy")}</div>
+                <div className="d-flex justify-content-end gap-2 mt-2">
                   <button className="btn btn-primary" onClick={() => setModalEdit(true)}><FaEdit /> Edit</button>
                   <button className="btn btn-danger" onClick={() => deleteNote(modalNote.id)}><FaTimes /> Delete</button>
                 </div>

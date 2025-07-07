@@ -42,18 +42,21 @@ function Home() {
 
   return (
     <div
-      className="min-vh-100 d-flex flex-column justify-content-center align-items-center text-center px-3"
+      className="min-vh-100 d-flex flex-column justify-content-center align-items-center text-center px-3 py-4"
       style={{
         backgroundColor: "#f9f4e7",
-        fontFamily: "'Old English Text MT', 'UnifrakturCook', serif",
+        fontFamily: "'Segoe UI', sans-serif",
         color: "#1e1b18"
       }}
     >
       <motion.h1
-        className="fw-bold mb-4 display-4"
+        className="fw-bold mb-3"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        style={{
+          fontSize: "clamp(1.5rem, 5vw, 2.5rem)"
+        }}
       >
         🚀 Welcome to Your Productivity Hub
       </motion.h1>
@@ -63,20 +66,26 @@ function Home() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-        style={{ maxWidth: "500px" }}
+        style={{
+          maxWidth: "90%",
+          fontSize: "clamp(1rem, 3.5vw, 1.25rem)"
+        }}
       >
         Track your progress, stay organized, and become consistent in your coding journey.
       </motion.p>
 
       {/* Animated DSA Icons */}
-      <div className="d-flex justify-content-center flex-wrap gap-4 mb-4">
+      <div className="d-flex justify-content-center flex-wrap gap-3 mb-4">
         {[FaCode, FaLaptopCode, FaBrain, FaTasks].map((Icon, idx) => (
           <motion.div
             key={idx}
             initial={{ y: 0 }}
             animate={{ y: [0, -10, 0] }}
             transition={{ repeat: Infinity, duration: 2 + idx * 0.3, ease: "easeInOut" }}
-            className="display-4 text-primary"
+            style={{
+              fontSize: "clamp(2rem, 10vw, 3rem)",
+              color: "#007bff"
+            }}
           >
             <Icon />
           </motion.div>
@@ -92,15 +101,19 @@ function Home() {
       >
         <Link
           to="/dsa"
-          className="btn btn-dark btn-lg shadow px-4 py-2"
-          style={{ fontFamily: "'Old English Text MT', 'UnifrakturCook', serif" }}
+          className="btn btn-dark shadow px-4 py-2"
+          style={{
+            fontSize: "clamp(1rem, 4vw, 1.25rem)"
+          }}
         >
           🚀 Go to DSA Tracker
         </Link>
         <Link
           to="/notes"
-          className="btn btn-outline-dark btn-lg shadow px-4 py-2"
-          style={{ fontFamily: "'Old English Text MT', 'UnifrakturCook', serif" }}
+          className="btn btn-outline-dark shadow px-4 py-2"
+          style={{
+            fontSize: "clamp(1rem, 4vw, 1.25rem)"
+          }}
         >
           📝 Open Notes
         </Link>
@@ -112,6 +125,9 @@ function Home() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
+        style={{
+          fontSize: "clamp(0.9rem, 3vw, 1.1rem)"
+        }}
       >
         ⚡ Consistency + Tracking = Growth 🚀
       </motion.p>

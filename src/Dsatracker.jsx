@@ -170,53 +170,48 @@ useEffect(() => {
   return (
     <div className={`container py-4 position-relative`}>
       <ToastContainer position="top-center" autoClose={3000} />
-
-{/* Progress Bars */}
-<div className="mb-5 text-center">
-  <motion.p
-    className="fw-semibold mb-3 fs-5"
-    initial={{ opacity: 0, y: -5 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.4 }}
-  >
-    📊 Overall Progress: {allCompleted}/{allKeys.length} ({allProgress}%)
-  </motion.p>
-
-  <div
-    className="position-relative shadow rounded-pill mx-auto"
-    style={{
-      height: "24px",
-      backgroundColor: "#e0e0e0",
-      overflow: "hidden",
-      maxWidth: "500px"
-    }}
-  >
-    {/* Gradient Progress Fill */}
-    <motion.div
-      initial={{ width: 0 }}
-      animate={{ width: `${allProgress}%` }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-      style={{
-        background: "linear-gradient(90deg,rgb(254, 96, 79) 0%,rgb(254, 97, 0) 100%)",
-        height: "100%",
-        borderRadius: "50px"
-      }}
-    ></motion.div>
-
-    {/* Centered % Label */}
-    <div
-      className="position-absolute top-50 start-50 translate-middle fw-bold"
-      style={{ color: "#1e1b18", fontSize: "0.9rem" }}
-    >
-      {allProgress}%
-    </div>
-  </div>
-</div>
-
-
-
+  
+      {/* Progress Bars */}
+      <div className="mb-4 text-center">
+        <motion.p
+          className="fw-semibold mb-3"
+          style={{ fontSize: "clamp(1rem, 2.5vw, 1.25rem)" }}
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          📊 Overall Progress: {allCompleted}/{allKeys.length} ({allProgress}%)
+        </motion.p>
+        <div
+          className="position-relative shadow rounded-pill mx-auto"
+          style={{
+            height: "20px",
+            backgroundColor: "#e0e0e0",
+            overflow: "hidden",
+            maxWidth: "90%",
+          }}
+        >
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${allProgress}%` }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            style={{
+              background: "linear-gradient(90deg, rgb(254,96,79) 0%, rgb(254,97,0) 100%)",
+              height: "100%",
+              borderRadius: "50px",
+            }}
+          />
+          <div
+            className="position-absolute top-50 start-50 translate-middle fw-bold"
+            style={{ fontSize: "0.85rem" }}
+          >
+            {allProgress}%
+          </div>
+        </div>
+      </div>
+  
       {/* Auth Buttons */}
-      <div className="text-center mb-3">
+      <div className="text-center mb-3 d-flex flex-wrap justify-content-center gap-2">
         {user ? (
           <>
             <span className="me-2">👋 {user.email}</span>
@@ -241,7 +236,7 @@ useEffect(() => {
           </button>
         )}
       </div>
-
+  
       {/* Modal */}
       {showModal && (
         <div
@@ -275,20 +270,20 @@ useEffect(() => {
           </div>
         </div>
       )}
-
+  
       {/* Save / Reset Controls */}
-      <div className="text-center mb-3">
-        <button className="btn btn-outline-primary btn-sm mx-1" onClick={saveProgress}>
+      <div className="text-center mb-4 d-flex flex-wrap justify-content-center gap-2">
+        <button className="btn btn-outline-primary btn-sm" onClick={saveProgress}>
           ☁️ Save Online
         </button>
-        <button className="btn btn-outline-danger btn-sm mx-1" onClick={handleReset}>
+        <button className="btn btn-outline-danger btn-sm" onClick={handleReset}>
           🔄 Reset
         </button>
-        <button className="btn btn-outline-secondary btn-sm mx-1" onClick={handleExport}>
+        <button className="btn btn-outline-secondary btn-sm" onClick={handleExport}>
           💾 Export
         </button>
         <button
-          className="btn btn-outline-secondary btn-sm mx-1"
+          className="btn btn-outline-secondary btn-sm"
           onClick={() => inputRef.current.click()}
         >
           📂 Import
@@ -296,12 +291,12 @@ useEffect(() => {
         <input
           type="file"
           accept=".json"
-          style={{ display: "none" }}
           ref={inputRef}
+          style={{ display: "none" }}
           onChange={handleImport}
         />
       </div>
-
+  
       {/* Section Selector */}
       <div className="text-center mb-4">
         <motion.div
@@ -309,12 +304,12 @@ useEffect(() => {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.4 }}
         >
-          <label className="form-label fw-bold fs-5 d-block">
+          <label className="fw-bold d-block mb-2">
             📂 Select Section
           </label>
           <div className="dropdown d-inline-block">
             <button
-              className="btn btn-lg btn-outline-primary dropdown-toggle px-4 py-2"
+              className="btn btn-outline-primary dropdown-toggle"
               type="button"
               data-bs-toggle="dropdown"
             >
@@ -335,65 +330,62 @@ useEffect(() => {
           </div>
         </motion.div>
       </div>
-
-      {/* Problems Table darkMode backgroundColor: "#f9f4e7", */}
-      <motion.table
-  key={selectedSection}
-  className={`table table-striped table-bordered align-middle ${darkMode ? 'table-dark' : 'parchment-table'}`}
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  exit={{ opacity: 0 }}
-  transition={{ duration: 0.3 }}
->
-
-  <thead className={darkMode ? 'table-dark' : ''}>
-          <tr>
-            <th>✅</th>
-            <th>📝 Problem</th>
-            <th>🏢 Company</th>
-            <th>🔗 Link</th>
-            <th>💡 Intuition</th>
-            <th>⭐ Difficulty</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data[selectedSection].map((problem, idx) => (
-            <motion.tr
-              key={idx}
-              whileHover={{ scale: 1.02 }}
-            >
-              <td>
-                <input
-                  type="checkbox"
-                  checked={progress[`${selectedSection}-${idx}`] || false}
-                  onChange={() => handleCheckboxChange(selectedSection, idx)}
-                
-                />
-              </td>
-              <td>{problem.name}</td>
-              <td>{problem.company}</td>
-              <td>
-                <a
-                  href={problem.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-sm btn-outline-primary"
-                >
-                  LeetCode
-                </a>
-              </td>
-              <td>{problem.intuition}</td>
-              <td>
-                <motion.span whileHover={{ scale: 1.1 }} className={badgeColor(problem.difficulty)}>
-                  {problem.difficulty}
-                </motion.span>
-              </td>
-            </motion.tr>
-          ))}
-        </tbody>
-      </motion.table>
+  
+      {/* Problems Table */}
+      <div className="table-responsive">
+        <motion.table
+          key={selectedSection}
+          className={`table table-striped table-bordered align-middle ${darkMode ? "table-dark" : "parchment-table"}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <thead className={darkMode ? "table-dark" : ""}>
+            <tr>
+              <th>✅</th>
+              <th>📝 Problem</th>
+              <th>🏢 Company</th>
+              <th>🔗 Link</th>
+              <th>💡 Intuition</th>
+              <th>⭐ Difficulty</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data[selectedSection].map((problem, idx) => (
+              <motion.tr key={idx} whileHover={{ scale: 1.01 }}>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={progress[`${selectedSection}-${idx}`] || false}
+                    onChange={() => handleCheckboxChange(selectedSection, idx)}
+                  />
+                </td>
+                <td>{problem.name}</td>
+                <td>{problem.company}</td>
+                <td>
+                  <a
+                    href={problem.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-sm btn-outline-primary"
+                  >
+                    LeetCode
+                  </a>
+                </td>
+                <td>{problem.intuition}</td>
+                <td>
+                  <motion.span whileHover={{ scale: 1.1 }} className={badgeColor(problem.difficulty)}>
+                    {problem.difficulty}
+                  </motion.span>
+                </td>
+              </motion.tr>
+            ))}
+          </tbody>
+        </motion.table>
+      </div>
     </div>
   );
+  
 }
 
 export default DSATracker;

@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "./supabaseClient";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const data = {
   Arrays: [
@@ -1689,7 +1691,6 @@ LongestSubstringVariations: [
   
 };
 
-
 const badgeColor = (difficulty) => {
   switch (difficulty) {
     case "Easy":
@@ -1708,22 +1709,25 @@ function App() {
   const [progress, setProgress] = useState({});
   const [user, setUser] = useState(null);
   const inputRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
-  // 🟩 Auth listener
   useEffect(() => {
-    const session = supabase.auth.getSession().then(({ data: { session } }) => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+      if (session?.user) fetchProgress(session.user.id);
+      else loadLocal();
+    };
+    getSession();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) fetchProgress(session.user.id);
       else loadLocal();
     });
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) fetchProgress(session.user.id);
-      else loadLocal();
-    });
-
-    return () => authListener.subscription.unsubscribe();
+    return () => listener.subscription.unsubscribe();
   }, []);
 
   const loadLocal = () => {
@@ -1731,9 +1735,8 @@ function App() {
     setProgress(saved);
   };
 
-  // 🟩 Fetch progress from Supabase
   const fetchProgress = async (user_id) => {
-    const { data: existing, error } = await supabase
+    const { data: existing } = await supabase
       .from("progress")
       .select("*")
       .eq("user_id", user_id)
@@ -1746,10 +1749,9 @@ function App() {
     }
   };
 
-  // 🟩 Save progress to Supabase
   const saveProgress = async () => {
     if (!user) {
-      alert("Login to save progress online.");
+      toast.error("Login to save online.");
       return;
     }
     const { data: existing } = await supabase
@@ -1758,16 +1760,11 @@ function App() {
       .eq("user_id", user.id)
       .single();
     if (existing) {
-      await supabase
-        .from("progress")
-        .update({ data: progress })
-        .eq("user_id", user.id);
+      await supabase.from("progress").update({ data: progress }).eq("user_id", user.id);
     } else {
-      await supabase
-        .from("progress")
-        .insert({ user_id: user.id, data: progress });
+      await supabase.from("progress").insert({ user_id: user.id, data: progress });
     }
-    alert("Progress saved online!");
+    toast.success("Progress saved online!");
   };
 
   const handleCheckboxChange = (section, idx) => {
@@ -1794,27 +1791,38 @@ function App() {
         const imported = JSON.parse(e.target.result);
         setProgress(imported);
         localStorage.setItem("dsa-progress", JSON.stringify(imported));
-        alert("Progress imported successfully!");
+        toast.success("Progress imported!");
       } catch {
-        alert("Invalid JSON file.");
+        toast.error("Invalid JSON file.");
       }
     };
     reader.readAsText(file);
   };
 
   const handleReset = () => {
-    if (window.confirm("Are you sure you want to reset your progress?")) {
+    if (window.confirm("Are you sure you want to reset progress?")) {
       setProgress({});
       localStorage.removeItem("dsa-progress");
+      toast.info("Progress reset.");
     }
   };
 
   const signInWithEmail = async () => {
     const email = prompt("Enter your email for login/signup:");
     if (!email) return;
-    const { error } = await supabase.auth.signInWithOtp({ email });
-    if (!error) {
-      alert("Check your email for the login link!");
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({ email });
+      if (error) {
+        toast.error("Error sending login link.");
+      } else {
+        setShowModal(true);
+        toast.success("Login link sent! Check your email.");
+      }
+    } catch {
+      toast.error("Unexpected error during login.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -1822,10 +1830,12 @@ function App() {
     await supabase.auth.signOut();
     setUser(null);
     loadLocal();
+    toast.info("Logged out.");
   };
 
   return (
-    <div className="container py-4">
+    <div className="container py-4 position-relative">
+      <ToastContainer position="top-center" autoClose={3000} />
       <motion.h1
         className="text-center mb-4"
         initial={{ opacity: 0, y: -20 }}
@@ -1845,11 +1855,56 @@ function App() {
             </button>
           </>
         ) : (
-          <button className="btn btn-sm btn-success" onClick={signInWithEmail}>
-            Login / Signup
+          <button
+            className="btn btn-sm btn-success"
+            onClick={signInWithEmail}
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2"></span>
+                Sending...
+              </>
+            ) : (
+              "Login / Signup"
+            )}
           </button>
         )}
       </div>
+
+      {/* 🟩 Modal */}
+      {showModal && (
+        <div
+          className="modal show d-block"
+          tabIndex="-1"
+          style={{ background: "rgba(0,0,0,0.5)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Check Your Email</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                A login link has been sent to your email. Click it to complete login.
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => setShowModal(false)}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 🟩 Save / Reset Controls */}
       <div className="text-center mb-3">
@@ -1922,7 +1977,7 @@ function App() {
             </thead>
             <tbody>
               {data[selectedSection].map((problem, idx) => (
-                <motion.tr key={idx} whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
+                <motion.tr key={idx} whileHover={{ scale: 1.02 }}>
                   <td>
                     <input
                       type="checkbox"
@@ -1933,7 +1988,12 @@ function App() {
                   <td>{problem.name}</td>
                   <td>{problem.company}</td>
                   <td>
-                    <a href={problem.link} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
+                    <a
+                      href={problem.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-sm btn-outline-primary"
+                    >
                       LeetCode
                     </a>
                   </td>

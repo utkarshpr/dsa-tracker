@@ -75,31 +75,7 @@ function Home() {
         ))}
       </div>
 
-      {/* Progress Bar */}
-      {loading ? (
-        <div className="spinner-border text-primary my-3" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      ) : user ? (
-        <div className="mb-4">
-          <small className="fw-semibold">
-            📊 {completedKeys.length}/{allKeys.length} Problems Completed ({percent}%)
-          </small>
-          <div className="progress mt-2" style={{ height: "20px" }}>
-            <div
-              className="progress-bar bg-success"
-              role="progressbar"
-              style={{ width: `${percent}%` }}
-            >
-              {percent}%
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="mb-4 text-muted fst-italic">
-          Login to view your synced progress.
-        </div>
-      )}
+   
 
       {/* Call to Action Buttons */}
       <motion.div

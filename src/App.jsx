@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 
 
@@ -1707,6 +1707,8 @@ function App() {
   const [selectedSection, setSelectedSection] = useState("Arrays");
   const [progress, setProgress] = useState({});
 
+  const inputRef = useRef(null);
+
   useEffect(() => {
     const savedProgress = JSON.parse(localStorage.getItem("dsa-progress") || "{}");
     setProgress(savedProgress);
@@ -1716,6 +1718,39 @@ function App() {
     const updated = { ...progress, [`${section}-${idx}`]: !progress[`${section}-${idx}`] };
     setProgress(updated);
     localStorage.setItem("dsa-progress", JSON.stringify(updated));
+  };
+
+  const handleExport = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(progress));
+    const downloadAnchorNode = document.createElement("a");
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "dsa-progress.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const imported = JSON.parse(e.target.result);
+        setProgress(imported);
+        localStorage.setItem("dsa-progress", JSON.stringify(imported));
+        alert("Progress imported successfully!");
+      } catch {
+        alert("Invalid JSON file.");
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleReset = () => {
+    if (window.confirm("Are you sure you want to reset your progress?")) {
+      setProgress({});
+      localStorage.removeItem("dsa-progress");
+    }
   };
 
   return (
@@ -1728,6 +1763,28 @@ function App() {
       >
         🚀 DSA Tracker
       </motion.h1>
+       {/* 🚩 Save / Reset Controls */}
+       <div className="text-center mb-3">
+        <button className="btn btn-outline-danger btn-sm mx-1" onClick={handleReset}>
+          🔄 Reset Progress
+        </button>
+        <button className="btn btn-outline-secondary btn-sm mx-1" onClick={handleExport}>
+          💾 Export Progress
+        </button>
+        <button
+          className="btn btn-outline-secondary btn-sm mx-1"
+          onClick={() => inputRef.current.click()}
+        >
+          📂 Import Progress
+        </button>
+        <input
+          type="file"
+          accept=".json"
+          style={{ display: "none" }}
+          ref={inputRef}
+          onChange={handleImport}
+        />
+      </div>
 
       <div className="dropdown mb-4 text-center">
         <button

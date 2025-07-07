@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
-
+import { supabase } from "./supabaseClient";
 
 const data = {
   Arrays: [
@@ -1706,13 +1706,69 @@ const badgeColor = (difficulty) => {
 function App() {
   const [selectedSection, setSelectedSection] = useState("Arrays");
   const [progress, setProgress] = useState({});
-
+  const [user, setUser] = useState(null);
   const inputRef = useRef(null);
 
+  // 🟩 Auth listener
   useEffect(() => {
-    const savedProgress = JSON.parse(localStorage.getItem("dsa-progress") || "{}");
-    setProgress(savedProgress);
+    const session = supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) fetchProgress(session.user.id);
+      else loadLocal();
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) fetchProgress(session.user.id);
+      else loadLocal();
+    });
+
+    return () => authListener.subscription.unsubscribe();
   }, []);
+
+  const loadLocal = () => {
+    const saved = JSON.parse(localStorage.getItem("dsa-progress") || "{}");
+    setProgress(saved);
+  };
+
+  // 🟩 Fetch progress from Supabase
+  const fetchProgress = async (user_id) => {
+    const { data: existing, error } = await supabase
+      .from("progress")
+      .select("*")
+      .eq("user_id", user_id)
+      .single();
+    if (existing) {
+      setProgress(existing.data);
+      localStorage.setItem("dsa-progress", JSON.stringify(existing.data));
+    } else {
+      setProgress({});
+    }
+  };
+
+  // 🟩 Save progress to Supabase
+  const saveProgress = async () => {
+    if (!user) {
+      alert("Login to save progress online.");
+      return;
+    }
+    const { data: existing } = await supabase
+      .from("progress")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
+    if (existing) {
+      await supabase
+        .from("progress")
+        .update({ data: progress })
+        .eq("user_id", user.id);
+    } else {
+      await supabase
+        .from("progress")
+        .insert({ user_id: user.id, data: progress });
+    }
+    alert("Progress saved online!");
+  };
 
   const handleCheckboxChange = (section, idx) => {
     const updated = { ...progress, [`${section}-${idx}`]: !progress[`${section}-${idx}`] };
@@ -1753,6 +1809,21 @@ function App() {
     }
   };
 
+  const signInWithEmail = async () => {
+    const email = prompt("Enter your email for login/signup:");
+    if (!email) return;
+    const { error } = await supabase.auth.signInWithOtp({ email });
+    if (!error) {
+      alert("Check your email for the login link!");
+    }
+  };
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    loadLocal();
+  };
+
   return (
     <div className="container py-4">
       <motion.h1
@@ -1763,8 +1834,28 @@ function App() {
       >
         🚀 DSA Tracker
       </motion.h1>
-       {/* 🚩 Save / Reset Controls */}
-       <div className="text-center mb-3">
+
+      {/* 🟩 Auth Buttons */}
+      <div className="text-center mb-2">
+        {user ? (
+          <>
+            <span className="me-2">👋 {user.email}</span>
+            <button className="btn btn-sm btn-danger" onClick={signOut}>
+              Logout
+            </button>
+          </>
+        ) : (
+          <button className="btn btn-sm btn-success" onClick={signInWithEmail}>
+            Login / Signup
+          </button>
+        )}
+      </div>
+
+      {/* 🟩 Save / Reset Controls */}
+      <div className="text-center mb-3">
+        <button className="btn btn-outline-primary btn-sm mx-1" onClick={saveProgress}>
+          ☁️ Save Online
+        </button>
         <button className="btn btn-outline-danger btn-sm mx-1" onClick={handleReset}>
           🔄 Reset Progress
         </button>
@@ -1786,6 +1877,7 @@ function App() {
         />
       </div>
 
+      {/* 🔻 Section Selector */}
       <div className="dropdown mb-4 text-center">
         <button
           className="btn btn-primary dropdown-toggle"
@@ -1799,10 +1891,7 @@ function App() {
         <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
           {Object.keys(data).map((section) => (
             <li key={section}>
-              <button
-                className="dropdown-item"
-                onClick={() => setSelectedSection(section)}
-              >
+              <button className="dropdown-item" onClick={() => setSelectedSection(section)}>
                 {section}
               </button>
             </li>
@@ -1810,6 +1899,7 @@ function App() {
         </ul>
       </div>
 
+      {/* 🔻 Table */}
       <div className="table-responsive">
         <AnimatePresence mode="wait">
           <motion.table
@@ -1832,11 +1922,7 @@ function App() {
             </thead>
             <tbody>
               {data[selectedSection].map((problem, idx) => (
-                <motion.tr
-                  key={idx}
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
+                <motion.tr key={idx} whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
                   <td>
                     <input
                       type="checkbox"
@@ -1847,21 +1933,13 @@ function App() {
                   <td>{problem.name}</td>
                   <td>{problem.company}</td>
                   <td>
-                    <a
-                      href={problem.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-sm btn-outline-primary"
-                    >
+                    <a href={problem.link} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
                       LeetCode
                     </a>
                   </td>
                   <td>{problem.intuition}</td>
                   <td>
-                    <motion.span
-                      whileHover={{ scale: 1.1 }}
-                      className={badgeColor(problem.difficulty)}
-                    >
+                    <motion.span whileHover={{ scale: 1.1 }} className={badgeColor(problem.difficulty)}>
                       {problem.difficulty}
                     </motion.span>
                   </td>

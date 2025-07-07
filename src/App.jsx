@@ -1711,6 +1711,13 @@ function App() {
   const inputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("dark-mode") === "true");
+
+  useEffect(() => {
+    document.body.classList.toggle("bg-dark", darkMode);
+    document.body.classList.toggle("text-light", darkMode);
+    localStorage.setItem("dark-mode", darkMode);
+  }, [darkMode]);
 
   useEffect(() => {
     const getSession = async () => {
@@ -1833,8 +1840,16 @@ function App() {
     toast.info("Logged out.");
   };
 
+  const sectionTotal = data[selectedSection].length;
+  const sectionCompleted = data[selectedSection].filter((_, idx) => progress[`${selectedSection}-${idx}`]).length;
+  const sectionProgress = ((sectionCompleted / sectionTotal) * 100).toFixed(0);
+
+  const allKeys = Object.keys(data).flatMap(section => data[section].map((_, idx) => `${section}-${idx}`));
+  const allCompleted = allKeys.filter(key => progress[key]).length;
+  const allProgress = ((allCompleted / allKeys.length) * 100).toFixed(0);
+
   return (
-    <div className="container py-4 position-relative">
+    <div className={`container py-4 position-relative ${darkMode ? 'bg-dark text-light' : ''}`}>
       <ToastContainer position="top-center" autoClose={3000} />
       <motion.h1
         className="text-center mb-4"
@@ -1845,6 +1860,34 @@ function App() {
         🚀 DSA Tracker
       </motion.h1>
 
+      {/* Dark Mode Toggle */}
+      <div className="d-flex justify-content-end mb-3">
+        <button
+          className={`btn ${darkMode ? 'btn-warning' : 'btn-dark'} btn-sm shadow-sm`}
+          onClick={() => setDarkMode(!darkMode)}
+        >
+          {darkMode ? "🌞 Light Mode" : "🌙 Dark Mode"}
+        </button>
+      </div>
+
+      {/* Progress Bars */}
+      <div className="mb-4 text-center">
+       
+        <div>
+          <small className="fw-semibold">
+            📊 Overall Progress: {allCompleted}/{allKeys.length} ({allProgress}%)
+          </small>
+          <div className="progress" style={{ height: "20px" }}>
+            <div
+              className={`progress-bar ${darkMode ? 'bg-success' : 'bg-primary'}`}
+              role="progressbar"
+              style={{ width: `${allProgress}%` }}
+            >
+              <span className="text-white fw-bold">{allProgress}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* 🟩 Auth Buttons */}
       <div className="text-center mb-2">
         {user ? (
@@ -1871,6 +1914,7 @@ function App() {
           </button>
         )}
       </div>
+      
 
       {/* 🟩 Modal */}
       {showModal && (
@@ -1933,82 +1977,96 @@ function App() {
       </div>
 
       {/* 🔻 Section Selector */}
-      <div className="dropdown mb-4 text-center">
-        <button
-          className="btn btn-primary dropdown-toggle"
-          type="button"
-          id="dropdownMenuButton"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          {selectedSection}
-        </button>
-        <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          {Object.keys(data).map((section) => (
-            <li key={section}>
-              <button className="dropdown-item" onClick={() => setSelectedSection(section)}>
-                {section}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+<div className="text-center mb-4">
+  <motion.div
+    initial={{ scale: 0.9, opacity: 0 }}
+    animate={{ scale: 1, opacity: 1 }}
+    transition={{ duration: 0.4 }}
+  >
+    <label className="form-label fw-bold fs-5 d-block">
+      📂 Select Section
+    </label>
+    <div className="dropdown d-inline-block">
+      <button
+        className="btn btn-lg btn-outline-primary dropdown-toggle px-4 py-2"
+        type="button"
+        id="dropdownMenuButton"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        {selectedSection}
+      </button>
+      <ul className="dropdown-menu shadow" aria-labelledby="dropdownMenuButton">
+        {Object.keys(data).map((section) => (
+          <li key={section}>
+            <button
+              className={`dropdown-item ${section === selectedSection ? "active fw-bold" : ""}`}
+              onClick={() => setSelectedSection(section)}
+            >
+              {section}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </motion.div>
+</div>
 
       {/* 🔻 Table */}
-      <div className="table-responsive">
-        <AnimatePresence mode="wait">
-          <motion.table
-            key={selectedSection}
-            className="table table-striped table-bordered align-middle"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+      <motion.table
+  key={selectedSection}
+  className={`table table-striped table-bordered align-middle ${darkMode ? 'table-dark' : ''}`}
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  exit={{ opacity: 0 }}
+  transition={{ duration: 0.3 }}
+>
+  <thead className="table-dark">
+    <tr>
+      <th>✅</th>
+      <th>📝 Problem</th>
+      <th>🏢 Company</th>
+      <th>🔗 Link</th>
+      <th>💡 Intuition</th>
+      <th>⭐ Difficulty</th>
+    </tr>
+  </thead>
+  <tbody>
+    {data[selectedSection].map((problem, idx) => (
+      <motion.tr
+        key={idx}
+        whileHover={{ scale: 1.02 }}
+        className={darkMode ? 'table-dark' : ''}
+      >
+        <td>
+          <input
+            type="checkbox"
+            checked={progress[`${selectedSection}-${idx}`] || false}
+            onChange={() => handleCheckboxChange(selectedSection, idx)}
+          />
+        </td>
+        <td>{problem.name}</td>
+        <td>{problem.company}</td>
+        <td>
+          <a
+            href={problem.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-sm btn-outline-primary"
           >
-            <thead className="table-dark">
-              <tr>
-                <th>✅</th>
-                <th>📝 Problem</th>
-                <th>🏢 Company</th>
-                <th>🔗 Link</th>
-                <th>💡 Intuition</th>
-                <th>⭐ Difficulty</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data[selectedSection].map((problem, idx) => (
-                <motion.tr key={idx} whileHover={{ scale: 1.02 }}>
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={progress[`${selectedSection}-${idx}`] || false}
-                      onChange={() => handleCheckboxChange(selectedSection, idx)}
-                    />
-                  </td>
-                  <td>{problem.name}</td>
-                  <td>{problem.company}</td>
-                  <td>
-                    <a
-                      href={problem.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-sm btn-outline-primary"
-                    >
-                      LeetCode
-                    </a>
-                  </td>
-                  <td>{problem.intuition}</td>
-                  <td>
-                    <motion.span whileHover={{ scale: 1.1 }} className={badgeColor(problem.difficulty)}>
-                      {problem.difficulty}
-                    </motion.span>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </motion.table>
-        </AnimatePresence>
-      </div>
+            LeetCode
+          </a>
+        </td>
+        <td>{problem.intuition}</td>
+        <td>
+          <motion.span whileHover={{ scale: 1.1 }} className={badgeColor(problem.difficulty)}>
+            {problem.difficulty}
+          </motion.span>
+        </td>
+      </motion.tr>
+    ))}
+  </tbody>
+</motion.table>
     </div>
   );
 }

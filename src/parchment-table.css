@@ -1,0 +1,20 @@
+/* parchment-table.css */
+
+.parchment-table td,
+.parchment-table th {
+  background-color: #f9f4e7 !important;
+  color: #1e1b18;
+  font-family: 'Old English Text MT', 'UnifrakturCook', serif;
+}
+
+.parchment-table tbody tr:hover td {
+  background-color: #f1ebd7 !important;
+}
+
+.parchment-table a.btn {
+  font-family: 'Old English Text MT', 'UnifrakturCook', serif;
+}
+
+.parchment-table .badge {
+  font-family: 'Old English Text MT', 'UnifrakturCook', serif;
+}

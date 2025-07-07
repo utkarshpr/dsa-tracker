@@ -7,7 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { data } from './data/dsaProblem';
 import { useDebounce } from 'use-debounce'; 
-
+import './parchment-table.css'; 
 const badgeColor = (difficulty) => {
   switch (difficulty) {
     case "Easy":
@@ -171,23 +171,49 @@ useEffect(() => {
     <div className={`container py-4 position-relative`}>
       <ToastContainer position="top-center" autoClose={3000} />
 
-      {/* Progress Bars */}
-      <div className="mb-4 text-center">
-        <div>
-          <small className="fw-semibold">
-            📊 Overall Progress: {allCompleted}/{allKeys.length} ({allProgress}%)
-          </small>
-          <div className="progress" style={{ height: "20px" }}>
-            <div
-              className={`progress-bar bg-primary`}
-              role="progressbar"
-              style={{ width: `${allProgress}%` }}
-            >
-              <span className="text-white fw-bold">{allProgress}%</span>
-            </div>
-          </div>
-        </div>
-      </div>
+{/* Progress Bars */}
+<div className="mb-5 text-center">
+  <motion.p
+    className="fw-semibold mb-3 fs-5"
+    initial={{ opacity: 0, y: -5 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4 }}
+  >
+    📊 Overall Progress: {allCompleted}/{allKeys.length} ({allProgress}%)
+  </motion.p>
+
+  <div
+    className="position-relative shadow rounded-pill mx-auto"
+    style={{
+      height: "24px",
+      backgroundColor: "#e0e0e0",
+      overflow: "hidden",
+      maxWidth: "500px"
+    }}
+  >
+    {/* Gradient Progress Fill */}
+    <motion.div
+      initial={{ width: 0 }}
+      animate={{ width: `${allProgress}%` }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      style={{
+        background: "linear-gradient(90deg,rgb(254, 96, 79) 0%,rgb(254, 97, 0) 100%)",
+        height: "100%",
+        borderRadius: "50px"
+      }}
+    ></motion.div>
+
+    {/* Centered % Label */}
+    <div
+      className="position-absolute top-50 start-50 translate-middle fw-bold"
+      style={{ color: "#1e1b18", fontSize: "0.9rem" }}
+    >
+      {allProgress}%
+    </div>
+  </div>
+</div>
+
+
 
       {/* Auth Buttons */}
       <div className="text-center mb-3">
@@ -310,15 +336,16 @@ useEffect(() => {
         </motion.div>
       </div>
 
-      {/* Problems Table */}
+      {/* Problems Table darkMode backgroundColor: "#f9f4e7", */}
       <motion.table
   key={selectedSection}
-  className={`table table-striped table-bordered align-middle ${darkMode ? 'table-dark' : ''}`}
+  className={`table table-striped table-bordered align-middle ${darkMode ? 'table-dark' : 'parchment-table'}`}
   initial={{ opacity: 0 }}
   animate={{ opacity: 1 }}
   exit={{ opacity: 0 }}
   transition={{ duration: 0.3 }}
 >
+
   <thead className={darkMode ? 'table-dark' : ''}>
           <tr>
             <th>✅</th>

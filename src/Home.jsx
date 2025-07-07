@@ -41,9 +41,16 @@ function Home() {
     : 0;
 
   return (
-    <div className="container py-5 text-center">
+    <div
+      className="min-vh-100 d-flex flex-column justify-content-center align-items-center text-center px-3"
+      style={{
+        backgroundColor: "#f9f4e7",
+        fontFamily: "'Old English Text MT', 'UnifrakturCook', serif",
+        color: "#1e1b18"
+      }}
+    >
       <motion.h1
-        className="fw-bold mb-4"
+        className="fw-bold mb-4 display-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -52,10 +59,11 @@ function Home() {
       </motion.h1>
 
       <motion.p
-        className="lead mb-4"
+        className="lead mb-4 px-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
+        style={{ maxWidth: "500px" }}
       >
         Track your progress, stay organized, and become consistent in your coding journey.
       </motion.p>
@@ -67,7 +75,7 @@ function Home() {
             key={idx}
             initial={{ y: 0 }}
             animate={{ y: [0, -10, 0] }}
-            transition={{ repeat: Infinity, duration: 2 + idx, ease: "easeInOut" }}
+            transition={{ repeat: Infinity, duration: 2 + idx * 0.3, ease: "easeInOut" }}
             className="display-4 text-primary"
           >
             <Icon />
@@ -75,19 +83,25 @@ function Home() {
         ))}
       </div>
 
-   
-
       {/* Call to Action Buttons */}
       <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
+        initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.5 }}
         className="d-flex justify-content-center gap-3 flex-wrap"
       >
-        <Link to="/dsa" className="btn btn-primary btn-lg shadow-sm px-4 py-2">
+        <Link
+          to="/dsa"
+          className="btn btn-dark btn-lg shadow px-4 py-2"
+          style={{ fontFamily: "'Old English Text MT', 'UnifrakturCook', serif" }}
+        >
           🚀 Go to DSA Tracker
         </Link>
-        <Link to="/notes" className="btn btn-secondary btn-lg shadow-sm px-4 py-2">
+        <Link
+          to="/notes"
+          className="btn btn-outline-dark btn-lg shadow px-4 py-2"
+          style={{ fontFamily: "'Old English Text MT', 'UnifrakturCook', serif" }}
+        >
           📝 Open Notes
         </Link>
       </motion.div>

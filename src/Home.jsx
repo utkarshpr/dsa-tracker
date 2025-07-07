@@ -1,11 +1,45 @@
 // src/pages/Home.jsx
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { FaCode, FaLaptopCode, FaBrain, FaTasks } from "react-icons/fa";
+import { supabase } from "./supabaseClient";
 
 function Home() {
+  const [user, setUser] = useState(null);
+  const [progress, setProgress] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserAndProgress = async () => {
+      setLoading(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+
+      if (session?.user) {
+        const { data: existing } = await supabase
+          .from("progress")
+          .select("*")
+          .eq("user_id", session.user.id)
+          .single();
+
+        if (existing && existing.data) {
+          setProgress(existing.data);
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchUserAndProgress();
+  }, []);
+
+  const allKeys = Object.keys(progress);
+  const completedKeys = allKeys.filter(key => progress[key]);
+  const percent = allKeys.length > 0
+    ? ((completedKeys.length / allKeys.length) * 100).toFixed(0)
+    : 0;
+
   return (
     <div className="container py-5 text-center">
       <motion.h1
@@ -40,6 +74,32 @@ function Home() {
           </motion.div>
         ))}
       </div>
+
+      {/* Progress Bar */}
+      {loading ? (
+        <div className="spinner-border text-primary my-3" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      ) : user ? (
+        <div className="mb-4">
+          <small className="fw-semibold">
+            📊 {completedKeys.length}/{allKeys.length} Problems Completed ({percent}%)
+          </small>
+          <div className="progress mt-2" style={{ height: "20px" }}>
+            <div
+              className="progress-bar bg-success"
+              role="progressbar"
+              style={{ width: `${percent}%` }}
+            >
+              {percent}%
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="mb-4 text-muted fst-italic">
+          Login to view your synced progress.
+        </div>
+      )}
 
       {/* Call to Action Buttons */}
       <motion.div

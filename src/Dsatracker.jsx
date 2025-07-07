@@ -6,6 +6,7 @@ import { supabase } from "./supabaseClient";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { data } from './data/dsaProblem';
+import { useDebounce } from 'use-debounce'; 
 
 const badgeColor = (difficulty) => {
   switch (difficulty) {
@@ -27,6 +28,15 @@ function DSATracker({darkMode}) {
   const inputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  const [debouncedProgress] = useDebounce(progress, 1500);
+
+useEffect(() => {
+  if (user) {
+    saveProgress();
+  }
+}, [debouncedProgress]);
+  
 
   useEffect(() => {
     const getSession = async () => {
@@ -330,7 +340,7 @@ function DSATracker({darkMode}) {
                   type="checkbox"
                   checked={progress[`${selectedSection}-${idx}`] || false}
                   onChange={() => handleCheckboxChange(selectedSection, idx)}
-                  onClick={saveProgress}
+                
                 />
               </td>
               <td>{problem.name}</td>
